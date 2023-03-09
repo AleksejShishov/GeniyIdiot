@@ -30,20 +30,35 @@ namespace GeniyIdiiotConsoleApp
             diagnose[4] = "таланнт";
             diagnose[5] = "гений";
 
+            Random random = new Random();
+
+            // Добавим массив, который будем заполнять случайным образом
+            int[] arrayForMixed = new int[countQuestion];
+            // Заполним массив линейно
+            for (int i = 0; i < countQuestion; i++)
+            {
+                arrayForMixed[i] = i;
+            }
+            // Перетасуем массив с помощью random
+            for (int i = countQuestion - 1; i >= 0; i--)
+            {
+                int temp = arrayForMixed[i];
+                int nextRandom = random.Next(0,countQuestion);
+                arrayForMixed[i] = arrayForMixed[nextRandom];
+                arrayForMixed[nextRandom] = temp;
+            }
+
             int countRightAnswers = 0;
-
-            Random random= new Random();
-
 
             for (int counter=0; counter<countQuestion; counter++)
             {
-                int randomQuestionIndex = random.Next(0,5)  ;
+                //int randomQuestionIndex = random.Next(0,5)  ;
                 Console.WriteLine("Вопрос номер " + (counter+1));
-                Console.WriteLine(questions[randomQuestionIndex]);
+                Console.WriteLine(questions[arrayForMixed[counter]]);
                 
                 int userAnswer = Convert.ToInt32(Console.ReadLine());
 
-                int rightAnswer = answers[randomQuestionIndex];
+                int rightAnswer = answers[arrayForMixed[counter]];
 
                 if (userAnswer == rightAnswer)
                 { 
