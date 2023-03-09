@@ -15,6 +15,8 @@ namespace GeniyIdiiotConsoleApp
             return questions;
         }
 
+        // Количество диагнозов НЕ зависит от количество вопросов. Вопросов может быть 10-20, а диагнозы те же. 
+        // Неверное название функции. Что возвращается не соответствует названию функции
         static string[] GetDiagnose(int countQuestion) 
         {
             string[] diagnose = new string[countQuestion + 1];
@@ -27,6 +29,7 @@ namespace GeniyIdiiotConsoleApp
             return diagnose;
         }
 
+        // Неверное название функции. Что возвращается не соответствует названию функции
         static int[] GetRightAnswer(int countQuestion) 
         {
             int[] answers = new int[countQuestion];
@@ -42,6 +45,8 @@ namespace GeniyIdiiotConsoleApp
         {
             Random random = new Random();
             int[] arrayForMixed = new int[countQuestion];
+
+            // комментарии излишне
 
             // Заполним массив линейно
             for (int counter = 0; counter < countQuestion; counter++)
@@ -67,7 +72,8 @@ namespace GeniyIdiiotConsoleApp
             string[] questions = GetQuestions(countQuestion);
 
             int[] answers = GetRightAnswer(countQuestion);
-           
+
+            // некорректное название переменной
             string[] diagnose  = GetDiagnose(countQuestion+1);            
             
             // Добавим массив, который будем заполнять случайным образом
@@ -75,6 +81,7 @@ namespace GeniyIdiiotConsoleApp
  
             int countRightAnswers = 0;
 
+            // Используй ctrl + k +d для форматирования кода
             for (int counter=0; counter<countQuestion; counter++)
             {
                 //int randomQuestionIndex = random.Next(0,5)  ;
