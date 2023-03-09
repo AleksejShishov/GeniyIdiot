@@ -38,6 +38,28 @@ namespace GeniyIdiiotConsoleApp
             return answers;
         }
 
+        static int[] GetRandomArray(int countQuestion) 
+        {
+            Random random = new Random();
+            int[] arrayForMixed = new int[countQuestion];
+
+            // Заполним массив линейно
+            for (int counter = 0; counter < countQuestion; counter++)
+            {
+                arrayForMixed[counter] = counter;
+            }
+
+            // Перетасуем массив с помощью random
+            for (int counter = countQuestion - 1; counter >= 0; counter--)
+            {
+                int temp = arrayForMixed[counter];
+                int nextRandom = random.Next(0, countQuestion);
+                arrayForMixed[counter] = arrayForMixed[nextRandom];
+                arrayForMixed[nextRandom] = temp;
+            }
+            return arrayForMixed;
+
+        }
         static void Main(string[] args)
         {
             int countQuestion = 5;
@@ -46,26 +68,11 @@ namespace GeniyIdiiotConsoleApp
 
             int[] answers = GetRightAnswer(countQuestion);
            
-            string[] diagnose  = GetDiagnose(countQuestion+1);
+            string[] diagnose  = GetDiagnose(countQuestion+1);            
             
-            Random random = new Random();
-
             // Добавим массив, который будем заполнять случайным образом
-            int[] arrayForMixed = new int[countQuestion];
-            // Заполним массив линейно
-            for (int i = 0; i < countQuestion; i++)
-            {
-                arrayForMixed[i] = i;
-            }
-            // Перетасуем массив с помощью random
-            for (int i = countQuestion - 1; i >= 0; i--)
-            {
-                int temp = arrayForMixed[i];
-                int nextRandom = random.Next(0,countQuestion);
-                arrayForMixed[i] = arrayForMixed[nextRandom];
-                arrayForMixed[nextRandom] = temp;
-            }
-
+            int[] arrayForMixed = GetRandomArray(countQuestion);
+ 
             int countRightAnswers = 0;
 
             for (int counter=0; counter<countQuestion; counter++)
