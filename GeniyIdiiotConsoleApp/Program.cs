@@ -4,22 +4,88 @@ namespace GeniyIdiiotConsoleApp
 {
     internal class Program
     {
-        static string[] GetQuestions(int countQuestion) 
+        static void Main(string[] args)
+        {
+
+            while (true)
+            {
+
+                Console.WriteLine("Здравствуйте! Введите своё имя:");
+                string userName = Console.ReadLine();
+
+                int countQuestion = 5;
+
+                string[] questions = GetQuestions(countQuestion);
+
+                int[] answers = GetAnswers(countQuestion);
+
+                string[] diagnoses = GetDiagnoses();
+
+                int[] arrayForMixed = GetRandomArray(countQuestion);
+
+                int countRightAnswers = 0;
+
+                for (int counter = 0; counter < countQuestion; counter++)
+                {
+                    Console.WriteLine("Вопрос номер " + (counter + 1));
+                    Console.WriteLine(questions[arrayForMixed[counter]]);
+
+                    int userAnswer = Convert.ToInt32(Console.ReadLine());
+
+                    int rightAnswer = answers[arrayForMixed[counter]];
+
+                    if (userAnswer == rightAnswer)
+                    {
+                        countRightAnswers++;
+                    }
+
+                }
+
+                Console.WriteLine("Количество правильных решений: " + countRightAnswers);
+                Console.WriteLine("Уважаемый(ая) " + userName + ", ваш диагноз: " + diagnoses[countRightAnswers]);
+
+                bool userChoice = GetUsersChoice("Желаете повторить тест?");
+                if (userChoice == false)
+                {
+                    break;
+                }
+            }
+        }
+
+        static bool GetUsersChoice(string message)
+        {
+            while (true)
+            {
+                Console.WriteLine(message + "Введите Да или Нет:");
+                string userInput = Console.ReadLine();
+
+                if (userInput.ToUpper() == "ДА")
+                {
+                    return true;
+                }
+                if (userInput.ToUpper() == "НЕТ")
+                {
+                    return false;
+                }
+
+                Console.WriteLine("Некорректный ответ!");
+            }
+        }
+
+        static string[] GetQuestions(int countQuestion)
         {
             string[] questions = new string[countQuestion];
-            questions[0] = "Сколько будет 2 плюс 2, умноженное на 2?";
-            questions[1] = "Бревно нужно разделить на 10 частей, сколько надо сделать распилов?";
-            questions[2] = "На двух руках 10 пальцев. Сколько пальцев на 5 руках?";
-            questions[3] = "Укол делают каждые полчаса, сколько нужно миинут для трёх уколов?";
-            questions[4] = "Пять свечей горело до конца, но две потухли заранее. Сколько свечей осталось?";
+            questions[0] = "сколько будет 2 плюс 2, умноженное на 2?";
+            questions[1] = "бревно нужно разделить на 10 частей, сколько надо сделать распилов?";
+            questions[2] = "на двух руках 10 пальцев. сколько пальцев на 5 руках?";
+            questions[3] = "укол делают каждые полчаса, сколько нужно миинут для трёх уколов?";
+            questions[4] = "пять свечей горело до конца, но две потухли заранее. сколько свечей осталось?";
             return questions;
         }
 
-        // Количество диагнозов НЕ зависит от количество вопросов. Вопросов может быть 10-20, а диагнозы те же. 
-        // Неверное название функции. Что возвращается не соответствует названию функции
-        static string[] GetDiagnose(int countQuestion) 
+            static string[] GetDiagnoses()
         {
-            string[] diagnose = new string[countQuestion + 1];
+            string[] diagnose = new string[6];
             diagnose[0] = "идиот";
             diagnose[1] = "кретин";
             diagnose[2] = "дурак";
@@ -29,8 +95,7 @@ namespace GeniyIdiiotConsoleApp
             return diagnose;
         }
 
-        // Неверное название функции. Что возвращается не соответствует названию функции
-        static int[] GetRightAnswer(int countQuestion) 
+        static int[] GetAnswers(int countQuestion)
         {
             int[] answers = new int[countQuestion];
             answers[0] = 6;
@@ -41,20 +106,16 @@ namespace GeniyIdiiotConsoleApp
             return answers;
         }
 
-        static int[] GetRandomArray(int countQuestion) 
+        static int[] GetRandomArray(int countQuestion)
         {
             Random random = new Random();
             int[] arrayForMixed = new int[countQuestion];
 
-            // комментарии излишне
-
-            // Заполним массив линейно
             for (int counter = 0; counter < countQuestion; counter++)
             {
                 arrayForMixed[counter] = counter;
             }
-
-            // Перетасуем массив с помощью random
+  
             for (int counter = countQuestion - 1; counter >= 0; counter--)
             {
                 int temp = arrayForMixed[counter];
@@ -63,45 +124,6 @@ namespace GeniyIdiiotConsoleApp
                 arrayForMixed[nextRandom] = temp;
             }
             return arrayForMixed;
-
-        }
-        static void Main(string[] args)
-        {
-            int countQuestion = 5;
-
-            string[] questions = GetQuestions(countQuestion);
-
-            int[] answers = GetRightAnswer(countQuestion);
-
-            // некорректное название переменной
-            string[] diagnose  = GetDiagnose(countQuestion+1);            
-            
-            // Добавим массив, который будем заполнять случайным образом
-            int[] arrayForMixed = GetRandomArray(countQuestion);
- 
-            int countRightAnswers = 0;
-
-            // Используй ctrl + k +d для форматирования кода
-            for (int counter=0; counter<countQuestion; counter++)
-            {
-                //int randomQuestionIndex = random.Next(0,5)  ;
-                Console.WriteLine("Вопрос номер " + (counter+1));
-                Console.WriteLine(questions[arrayForMixed[counter]]);
-                
-                int userAnswer = Convert.ToInt32(Console.ReadLine());
-
-                int rightAnswer = answers[arrayForMixed[counter]];
-
-                if (userAnswer == rightAnswer)
-                { 
-                countRightAnswers++;
-                }
-
-            }
-
-            Console.WriteLine("Количество правильных решений: " + countRightAnswers);
-            Console.WriteLine("Ваш диагноз: Вы - " + diagnose[countRightAnswers]);
-           // Console.WriteLine("Ваш диагноз: Вы - " + diagnose[countRightAnswers]);
 
         }
     }
