@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GeniyIdiiotConsoleApp
 {
@@ -30,7 +31,23 @@ namespace GeniyIdiiotConsoleApp
                     Console.WriteLine("Вопрос номер " + (counter + 1));
                     Console.WriteLine(questions[arrayForMixed[counter]]);
 
-                    int userAnswer = Convert.ToInt32(Console.ReadLine());
+                    //  int useranswer = convert.toint32(console.readline());
+                    int userAnswer;
+
+                    while (true)
+                    {
+                        if (int.TryParse(Console.ReadLine(), out userAnswer))
+                        {
+                            Console.ForegroundColor = ConsoleColor.White;
+                            break;
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Пожалуйста, введите целое число!");
+                            Console.ForegroundColor = ConsoleColor.White;
+                        }
+                    }
 
                     int rightAnswer = answers[arrayForMixed[counter]];
 
@@ -44,13 +61,14 @@ namespace GeniyIdiiotConsoleApp
                 Console.WriteLine("Количество правильных решений: " + countRightAnswers);
                 Console.WriteLine("Уважаемый(ая) " + userName + ", ваш диагноз: " + diagnoses[countRightAnswers]);
 
-                bool userChoice = GetUsersChoice("Желаете повторить тест?");
+                bool userChoice = GetUsersChoice("Желаете повторить тест? ");
                 if (userChoice == false)
                 {
                     break;
                 }
             }
         }
+
 
         static bool GetUsersChoice(string message)
         {
@@ -68,7 +86,9 @@ namespace GeniyIdiiotConsoleApp
                     return false;
                 }
 
-                Console.WriteLine("Некорректный ответ!");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Некорректный ответ! ");
+                Console.ForegroundColor = ConsoleColor.White;
             }
         }
 
@@ -83,7 +103,7 @@ namespace GeniyIdiiotConsoleApp
             return questions;
         }
 
-            static string[] GetDiagnoses()
+        static string[] GetDiagnoses()
         {
             string[] diagnose = new string[6];
             diagnose[0] = "идиот";
@@ -115,7 +135,7 @@ namespace GeniyIdiiotConsoleApp
             {
                 arrayForMixed[counter] = counter;
             }
-  
+
             for (int counter = countQuestion - 1; counter >= 0; counter--)
             {
                 int temp = arrayForMixed[counter];
