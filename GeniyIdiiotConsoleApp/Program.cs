@@ -6,8 +6,8 @@ namespace GeniyIdiiotConsoleApp
     internal class Program
     {
 
-        const int diagnosesNumber = 6;
-        const int countQuestion = 5;
+        const int diagnosesMaxNumber = 6;
+        const int questionsMaxNumber = 5;
 
 
         static void Main(string[] args)
@@ -18,17 +18,17 @@ namespace GeniyIdiiotConsoleApp
                 Console.WriteLine("Здравствуйте! Введите своё имя:");
                 string userName = Console.ReadLine();
 
-                string[] questions = GetQuestions(countQuestion);
+                string[] questions = GetQuestions();
 
-                int[] answers = GetAnswers(countQuestion);
+                int[] answers = GetAnswers();
 
                 string[] diagnoses = GetDiagnoses();
 
-                int[] arrayForMixed = GetRandomArray(countQuestion);
+                int[] arrayForMixed = GetRandomArray();
 
                 int countRightAnswers = 0;
 
-                for (int counter = 0; counter < countQuestion; counter++)
+                for (int counter = 0; counter < questionsMaxNumber; counter++)
                 {
                     Console.WriteLine("Вопрос номер " + (counter + 1));
                     Console.WriteLine(questions[arrayForMixed[counter]]);
@@ -44,8 +44,8 @@ namespace GeniyIdiiotConsoleApp
 
                 }
 
-                float adjustedCountRightAnswers = (float)countRightAnswers / countQuestion;
-                adjustedCountRightAnswers = adjustedCountRightAnswers * (diagnosesNumber - 1);  
+                float adjustedCountRightAnswers = (float)countRightAnswers / questionsMaxNumber;
+                adjustedCountRightAnswers = adjustedCountRightAnswers * (diagnosesMaxNumber - 1);  
  
                 Console.WriteLine("Количество правильных решений: " + countRightAnswers);
                 Console.WriteLine("Уважаемый(ая) " + userName + ", ваш диагноз: " + diagnoses[(int)adjustedCountRightAnswers]);
@@ -59,9 +59,9 @@ namespace GeniyIdiiotConsoleApp
         }
 
 
-        static string[] GetQuestions(int countQuestion)
+        static string[] GetQuestions()
         {
-            string[] questions = new string[countQuestion];
+            string[] questions = new string[questionsMaxNumber];
             questions[0] = "сколько будет 2 плюс 2, умноженное на 2?";
             questions[1] = "бревно нужно разделить на 10 частей, сколько надо сделать распилов?";
             questions[2] = "на двух руках 10 пальцев. сколько пальцев на 5 руках?";
@@ -70,9 +70,9 @@ namespace GeniyIdiiotConsoleApp
             return questions;
         }
 
-        static int[] GetAnswers(int countQuestion)
+        static int[] GetAnswers()
         {
-            int[] answers = new int[countQuestion];
+            int[] answers = new int[questionsMaxNumber];
             answers[0] = 6;
             answers[1] = 9;
             answers[2] = 25;
@@ -83,7 +83,7 @@ namespace GeniyIdiiotConsoleApp
 
         static string[] GetDiagnoses()
         {
-            string[] diagnose = new string[diagnosesNumber];
+            string[] diagnose = new string[diagnosesMaxNumber];
             diagnose[0] = "идиот";
             diagnose[1] = "кретин";
             diagnose[2] = "дурак";
@@ -93,20 +93,20 @@ namespace GeniyIdiiotConsoleApp
             return diagnose;
         }
 
-        static int[] GetRandomArray(int countQuestion)
+        static int[] GetRandomArray()
         {
             Random random = new Random();
-            int[] arrayForMixed = new int[countQuestion];
+            int[] arrayForMixed = new int[questionsMaxNumber];
 
-            for (int counter = 0; counter < countQuestion; counter++)
+            for (int counter = 0; counter < questionsMaxNumber; counter++)
             {
                 arrayForMixed[counter] = counter;
             }
 
-            for (int counter = countQuestion - 1; counter >= 0; counter--)
+            for (int counter = questionsMaxNumber - 1; counter >= 0; counter--)
             {
                 int temp = arrayForMixed[counter];
-                int nextRandom = random.Next(0, countQuestion);
+                int nextRandom = random.Next(0, questionsMaxNumber);
                 arrayForMixed[counter] = arrayForMixed[nextRandom];
                 arrayForMixed[nextRandom] = temp;
             }
