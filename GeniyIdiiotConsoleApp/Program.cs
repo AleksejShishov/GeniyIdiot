@@ -5,16 +5,18 @@ namespace GeniyIdiiotConsoleApp
 {
     internal class Program
     {
+
+        const int diagnosesNumber = 6;
+        const int countQuestion = 5;
+
+
         static void Main(string[] args)
         {
-
             while (true)
             {
 
                 Console.WriteLine("Здравствуйте! Введите своё имя:");
                 string userName = Console.ReadLine();
-
-                int countQuestion = 5;
 
                 string[] questions = GetQuestions(countQuestion);
 
@@ -31,24 +33,8 @@ namespace GeniyIdiiotConsoleApp
                     Console.WriteLine("Вопрос номер " + (counter + 1));
                     Console.WriteLine(questions[arrayForMixed[counter]]);
 
-                    //  int useranswer = convert.toint32(console.readline());
-                    int userAnswer;
-
-                    while (true)
-                    {
-                        if (int.TryParse(Console.ReadLine(), out userAnswer))
-                        {
-                            Console.ForegroundColor = ConsoleColor.White;
-                            break;
-                        }
-                        else
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Пожалуйста, введите целое число!");
-                            Console.ForegroundColor = ConsoleColor.White;
-                        }
-                    }
-
+                    int userAnswer = GetUsersAnswer();
+  
                     int rightAnswer = answers[arrayForMixed[counter]];
 
                     if (userAnswer == rightAnswer)
@@ -58,8 +44,11 @@ namespace GeniyIdiiotConsoleApp
 
                 }
 
+                float adjustedCountRightAnswers = (float)countRightAnswers / countQuestion;
+                adjustedCountRightAnswers = adjustedCountRightAnswers * (diagnosesNumber - 1);  
+ 
                 Console.WriteLine("Количество правильных решений: " + countRightAnswers);
-                Console.WriteLine("Уважаемый(ая) " + userName + ", ваш диагноз: " + diagnoses[countRightAnswers]);
+                Console.WriteLine("Уважаемый(ая) " + userName + ", ваш диагноз: " + diagnoses[(int)adjustedCountRightAnswers]);
 
                 bool userChoice = GetUsersChoice("Желаете повторить тест? ");
                 if (userChoice == false)
@@ -69,28 +58,6 @@ namespace GeniyIdiiotConsoleApp
             }
         }
 
-
-        static bool GetUsersChoice(string message)
-        {
-            while (true)
-            {
-                Console.WriteLine(message + "Введите Да или Нет:");
-                string userInput = Console.ReadLine();
-
-                if (userInput.ToUpper() == "ДА")
-                {
-                    return true;
-                }
-                if (userInput.ToUpper() == "НЕТ")
-                {
-                    return false;
-                }
-
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Некорректный ответ! ");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-        }
 
         static string[] GetQuestions(int countQuestion)
         {
@@ -103,18 +70,6 @@ namespace GeniyIdiiotConsoleApp
             return questions;
         }
 
-        static string[] GetDiagnoses()
-        {
-            string[] diagnose = new string[6];
-            diagnose[0] = "идиот";
-            diagnose[1] = "кретин";
-            diagnose[2] = "дурак";
-            diagnose[3] = "нормальный";
-            diagnose[4] = "таланнт";
-            diagnose[5] = "гений";
-            return diagnose;
-        }
-
         static int[] GetAnswers(int countQuestion)
         {
             int[] answers = new int[countQuestion];
@@ -124,6 +79,18 @@ namespace GeniyIdiiotConsoleApp
             answers[3] = 60;
             answers[4] = 2;
             return answers;
+        }
+
+        static string[] GetDiagnoses()
+        {
+            string[] diagnose = new string[diagnosesNumber];
+            diagnose[0] = "идиот";
+            diagnose[1] = "кретин";
+            diagnose[2] = "дурак";
+            diagnose[3] = "нормальный";
+            diagnose[4] = "таланнт";
+            diagnose[5] = "гений";
+            return diagnose;
         }
 
         static int[] GetRandomArray(int countQuestion)
@@ -146,5 +113,49 @@ namespace GeniyIdiiotConsoleApp
             return arrayForMixed;
 
         }
+
+        static int GetUsersAnswer()
+        {
+            int userAnswer;
+
+            while (true)
+            {
+                if (int.TryParse(Console.ReadLine(), out userAnswer))
+                {
+                    break;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Пожалуйста, введите целое число в диапозоне [ -2 147 483 648; 2 147 483 647]!");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
+            return userAnswer;
+        }
+                    
+            static bool GetUsersChoice(string message)
+        {
+            while (true)
+            {
+                Console.WriteLine(message + "Введите Да или Нет:");
+                string userInput = Console.ReadLine();
+
+                if (userInput.ToUpper() == "ДА")
+                {
+                    return true;
+                }
+                if (userInput.ToUpper() == "НЕТ")
+                {
+                    return false;
+                }
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Некорректный ответ! ");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+        }
+
+
     }
 }
