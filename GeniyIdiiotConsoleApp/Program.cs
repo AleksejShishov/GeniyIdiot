@@ -1,67 +1,160 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GeniyIdiiotConsoleApp
 {
     internal class Program
     {
-        static string[] = GetQuestions(int countQuestions)
-        {
-            string[] questions = new string[countQuestions];
-            questions[0] = "Сколько будет 2 плюс 2, умноженное на 2?";
-            questions[1] = "Бревно нужно разделить на 10 частей, сколько надо сделать распилов?";
-            questions[2] = "На двух руках 10 пальцев. Сколько пальцев на 5 руках?";
-            questions[3] = "Укол делают каждые полчаса, сколько нужно миинут для трёх уколов?";
-            questions[4] = "Пять свечей горело до конца, но две потухли заранее. Сколько свечей осталось?";
-            return questions;
 
-        }
+        const int Diagnoses_Max_Number = 6;
+        const int Questions_Max_Number = 5;
+
+
         static void Main(string[] args)
         {
-            int countQuestions = 5;
-            string[] questions = GetQuestions(countQuestions);
+            while (true)
+            {
+
+                Console.WriteLine("Здравствуйте! Введите своё имя:");
+                string userName = Console.ReadLine();
+
+                string[] questions = GetQuestions();
+
+                int[] answers = GetAnswers();
+
+                int[] arrayForMixed = GetRandomArray();
+
+                int countRightAnswers = 0;
+
+                for (int counter = 0; counter < Questions_Max_Number; counter++)
+                {
+                    Console.WriteLine("Вопрос номер " + (counter + 1));
+                    Console.WriteLine(questions[arrayForMixed[counter]]);
+
+                    int userAnswer = GetUsersAnswer();
+
+                    int rightAnswer = answers[arrayForMixed[counter]];
+
+                    if (userAnswer == rightAnswer)
+                    {
+                        countRightAnswers++;
+                    }
+
+                }
+
+                Console.WriteLine("Количество правильных решений: " + countRightAnswers);
+                Console.WriteLine("Уважаемый(ая) " + userName + ", Ваш диагноз: " + GetDiagnose(countRightAnswers));
+
+                bool userChoice = GetUsersChoice("Желаете повторить тест? ");
+                if (userChoice == false)
+                {
+                    break;
+                }
+            }
+        }
 
 
-            int[] answers = new int[countQuestions];
+        static string[] GetQuestions()
+        {
+            string[] questions = new string[Questions_Max_Number];
+            questions[0] = "Сколько будет 2 плюс 2 умноженное на 2?";
+            questions[1] = "Бревно нужно разделить на 10 частей, сколько нужно сделать распилов?";
+            questions[2] = "На двух руках 10 пальцев. сколько пальцев на 5 руках?";
+            questions[3] = "Укол делают каждые полчаса, сколько нужно миинут для трёх уколов?";
+            questions[4] = "Пять свечей горело до конца, но две потухли заранее. сколько свечей осталось?";
+            return questions;
+        }
+
+        static int[] GetAnswers()
+        {
+            int[] answers = new int[Questions_Max_Number];
             answers[0] = 6;
             answers[1] = 9;
             answers[2] = 25;
             answers[3] = 60;
             answers[4] = 2;
+            return answers;
+        }
 
-            string[] diagnose  = new string[countQuestions+1];
-            diagnose[0] = "идиот";
-            diagnose[1] = "кретин";
-            diagnose[2] = "дурак";
-            diagnose[3] = "нормальный";
-            diagnose[4] = "таланнт";
-            diagnose[5] = "гений";
+        static string GetDiagnose(int countRightAnswers)
+        {
+            string[] diagnoses = new string[Diagnoses_Max_Number];
+            diagnoses[0] = "идиот";
+            diagnoses[1] = "кретин";
+            diagnoses[2] = "дурак";
+            diagnoses[3] = "нормальный";
+            diagnoses[4] = "талант";
+            diagnoses[5] = "гений";
 
-            int countRightAnswers = 0;
+            float adjustedCountRightAnswers = (float)countRightAnswers / Questions_Max_Number;
+            adjustedCountRightAnswers = adjustedCountRightAnswers * (Diagnoses_Max_Number - 1);
 
-            Random random= new Random();
+            return diagnoses[(int)adjustedCountRightAnswers];
+        }
 
+        static int[] GetRandomArray()
+        {
+            Random random = new Random();
+            int[] arrayForMixed = new int[Questions_Max_Number];
 
-            for (int counter=0; counter<countQuestions; counter++)
+            for (int counter = 0; counter < Questions_Max_Number; counter++)
             {
-                int randomQuestionIndex = random.Next(0,5)  ;
-                Console.WriteLine("Вопрос номер " + (counter+1));
-                Console.WriteLine(questions[randomQuestionIndex]);
-                
-                int userAnswer = Convert.ToInt32(Console.ReadLine());
-
-                int rightAnswer = answers[randomQuestionIndex];
-
-                if (userAnswer == rightAnswer)
-                { 
-                countRightAnswers++;
-                }
-
+                arrayForMixed[counter] = counter;
             }
 
-            Console.WriteLine("Количество правильных решений: " + countRightAnswers);
-            Console.WriteLine("Ваш диагноз: Вы - " + diagnose[countRightAnswers]);
-           // Console.WriteLine("Ваш диагноз: Вы - " + diagnose[countRightAnswers]);
+            for (int counter = Questions_Max_Number - 1; counter >= 0; counter--)
+            {
+                int temp = arrayForMixed[counter];
+                int nextRandom = random.Next(0, Questions_Max_Number);
+                arrayForMixed[counter] = arrayForMixed[nextRandom];
+                arrayForMixed[nextRandom] = temp;
+            }
+            return arrayForMixed;
 
         }
+
+        static int GetUsersAnswer()
+        {
+            int userAnswer;
+
+            while (true)
+            {
+                if (int.TryParse(Console.ReadLine(), out userAnswer))
+                {
+                    break;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Пожалуйста, введите целое число в диапозоне [ -2 147 483 648; 2 147 483 647]!");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
+            return userAnswer;
+        }
+
+        static bool GetUsersChoice(string message)
+        {
+            while (true)
+            {
+                Console.WriteLine(message + "Введите Да или Нет:");
+                string userInput = Console.ReadLine();
+
+                if (userInput.ToUpper() == "ДА")
+                {
+                    return true;
+                }
+                if (userInput.ToUpper() == "НЕТ")
+                {
+                    return false;
+                }
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Некорректный ответ! ");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+        }
+
+
     }
 }
