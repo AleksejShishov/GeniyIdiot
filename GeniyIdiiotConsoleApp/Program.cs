@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace GeniyIdiiotConsoleApp
 {
@@ -8,6 +10,8 @@ namespace GeniyIdiiotConsoleApp
 
         const int Diagnoses_Max_Number = 6;
         const int Questions_Max_Number = 5;
+        const string Result_Txt_File_Name = "user_res.txt";
+
 
 
         static void Main(string[] args)
@@ -42,10 +46,20 @@ namespace GeniyIdiiotConsoleApp
 
                 }
 
+                string diagnose = GetDiagnose(countRightAnswers);
                 Console.WriteLine("Количество правильных решений: " + countRightAnswers);
-                Console.WriteLine("Уважаемый(ая) " + userName + ", Ваш диагноз: " + GetDiagnose(countRightAnswers));
+                Console.WriteLine("Уважаемый(ая) " + userName + ", ваш диагноз: " + diagnose);
 
-                bool userChoice = GetUsersChoice("Желаете повторить тест? ");
+                SaveUserResult(userName, countRightAnswers, diagnose);
+
+                bool userChoice = GetUsersChoice("Желаете посмотреть результаты? ");
+                if (userChoice == true)
+                {
+                    Console.WriteLine("\n РЕЗУЛЬТАТЫ : \n");
+                    ShowUserResults();
+                }
+
+                userChoice = GetUsersChoice("Желаете повторить тест? ");
                 if (userChoice == false)
                 {
                     break;
@@ -53,6 +67,38 @@ namespace GeniyIdiiotConsoleApp
             }
         }
 
+        static void ShowUserResults()
+        {
+            StreamReader reader = new StreamReader(Result_Txt_File_Name, Encoding.UTF8);
+            var line = reader.ReadToEnd();
+            ShowResultsTable(line);
+            reader.Close();
+        }
+
+        static void ShowResultsTable(string line)
+        {
+            string[] words = line.Split('#');
+            foreach (String word in words)
+            {
+                //  Console.Write((word.EndsWith("!")) ? word.Remove(word.Length-2, 1) + "\n" : word + " ");
+                Console.Write(word + " ");
+            }
+
+        }
+
+        static void SaveUserResult(string UserName, int countRightAnswers, string diagnose)
+        {
+            //           string line = $"{UserName}#{countRightAnswers}#{diagnose}!";
+            string line = $"{UserName}#{countRightAnswers}#{diagnose}";
+            AppendToFile(Result_Txt_File_Name, line);
+        }
+
+        static void AppendToFile(string fileName, string line)
+        {
+            StreamWriter writer = new StreamWriter(fileName, true, Encoding.UTF8);
+            writer.WriteLine(line);
+            writer.Close();
+        }
 
         static string[] GetQuestions()
         {
