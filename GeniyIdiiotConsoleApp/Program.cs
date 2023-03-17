@@ -18,9 +18,10 @@ namespace GeniyIdiiotConsoleApp
         {
             while (true)
             {
-
+                Console.Clear();                
                 Console.WriteLine("Здравствуйте! Введите своё имя:");
                 string userName = Console.ReadLine();
+                Console.WriteLine();
 
                 string[] questions = GetQuestions();
 
@@ -47,19 +48,19 @@ namespace GeniyIdiiotConsoleApp
                 }
 
                 string diagnose = GetDiagnose(countRightAnswers);
-                Console.WriteLine("Количество правильных решений: " + countRightAnswers);
+                Console.WriteLine("\nКоличество правильных решений: " + countRightAnswers);
                 Console.WriteLine("Уважаемый(ая) " + userName + ", ваш диагноз: " + diagnose);
 
                 SaveUserResult(userName, countRightAnswers, diagnose);
 
-                bool userChoice = GetUsersChoice("Желаете посмотреть результаты? ");
+                bool userChoice = GetUsersChoice("\nЖелаете посмотреть результаты? ");
                 if (userChoice == true)
                 {
-                    Console.WriteLine("\n РЕЗУЛЬТАТЫ : \n");
+                    Console.WriteLine("\n{0,40}\n", "РЕЗУЛЬТАТЫ :");
                     ShowUserResults();
                 }
 
-                userChoice = GetUsersChoice("Желаете повторить тест? ");
+                userChoice = GetUsersChoice("\nЖелаете повторить тест? ");
                 if (userChoice == false)
                 {
                     break;
@@ -69,34 +70,35 @@ namespace GeniyIdiiotConsoleApp
 
         static void ShowUserResults()
         {
-            StreamReader reader = new StreamReader(Result_Txt_File_Name, Encoding.UTF8);
-            var line = reader.ReadToEnd();
-            ShowResultsTable(line);
+            var reader = new StreamReader(Result_Txt_File_Name, Encoding.UTF8);
+
+            Console.WriteLine("{0,-20}|{1,-20}|{2,-20}|", "Имя пользователя", "Правильных ответов", "Диагноз");
+            Console.WriteLine("{0,20}{0,20}{0,20}", "_____________________");
+
+            while (!reader.EndOfStream)
+            {
+                var line = reader.ReadLine();
+                //    ShowResultsTable(value);
+                string[] words = line.Split('#');
+                foreach (String word in words)
+                {
+                    Console.Write("{0,-20}|", word);
+                }
+
+                Console.WriteLine();
+            }
             reader.Close();
         }
-
-        static void ShowResultsTable(string line)
-        {
-            string[] words = line.Split('#');
-            foreach (String word in words)
-            {
-                //  Console.Write((word.EndsWith("!")) ? word.Remove(word.Length-2, 1) + "\n" : word + " ");
-                Console.Write(word + " ");
-            }
-
-        }
-
         static void SaveUserResult(string UserName, int countRightAnswers, string diagnose)
         {
-            //           string line = $"{UserName}#{countRightAnswers}#{diagnose}!";
             string line = $"{UserName}#{countRightAnswers}#{diagnose}";
             AppendToFile(Result_Txt_File_Name, line);
         }
 
-        static void AppendToFile(string fileName, string line)
+        static void AppendToFile(string fileName, string value)
         {
-            StreamWriter writer = new StreamWriter(fileName, true, Encoding.UTF8);
-            writer.WriteLine(line);
+            var writer = new StreamWriter(fileName, true, Encoding.UTF8);
+            writer.WriteLine(value);
             writer.Close();
         }
 
