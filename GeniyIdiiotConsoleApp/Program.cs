@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace GeniyIdiiotConsoleApp
@@ -8,43 +9,44 @@ namespace GeniyIdiiotConsoleApp
     internal class Program
     {
 
-        const int Diagnoses_Max_Number = 6;
-        const int Questions_Max_Number = 5;
-        const string Result_Txt_File_Name = "user_res.txt";
+        const int QuestionsCount = 5;
+        const string ResultTxtFileName = "user_res.txt";
 
 
 
         static void Main(string[] args)
         {
-            while (true)
-            {
-                Console.Clear();                
+            Random random = new Random();
+
+            while (true)            
+            {               
                 Console.WriteLine("Здравствуйте! Введите своё имя:");
-                string userName = Console.ReadLine();
+                var userName = Console.ReadLine();
                 Console.WriteLine();
 
-                string[] questions = GetQuestions();
-
-                int[] answers = GetAnswers();
-
-                int[] arrayForMixed = GetRandomArray();
-
+                var questions = GetQuestions();
+                var answers = GetAnswers();
+                            
                 int countRightAnswers = 0;
 
-                for (int counter = 0; counter < Questions_Max_Number; counter++)
+                for (int counter = 0; counter < QuestionsCount; counter++)
                 {
-                    Console.WriteLine("Вопрос номер " + (counter + 1));
-                    Console.WriteLine(questions[arrayForMixed[counter]]);
+                    Console.WriteLine($"Вопрос номер {counter + 1}");
+                    
+                    var randomQuestionIndex = random.Next(questions.Count);
+                    Console.WriteLine(questions[randomQuestionIndex]);
 
                     int userAnswer = GetUsersAnswer();
 
-                    int rightAnswer = answers[arrayForMixed[counter]];
+                    int rightAnswer = answers[randomQuestionIndex];
 
                     if (userAnswer == rightAnswer)
                     {
                         countRightAnswers++;
                     }
 
+                    questions.RemoveAt(randomQuestionIndex);
+                    answers.RemoveAt(randomQuestionIndex);
                 }
 
                 string diagnose = GetDiagnose(countRightAnswers);
@@ -54,45 +56,43 @@ namespace GeniyIdiiotConsoleApp
                 SaveUserResult(userName, countRightAnswers, diagnose);
 
                 bool userChoice = GetUsersChoice("\nЖелаете посмотреть результаты? ");
-                if (userChoice == true)
+                if (userChoice)
                 {
-                    Console.WriteLine("\n{0,40}\n", "РЕЗУЛЬТАТЫ :");
                     ShowUserResults();
                 }
 
                 userChoice = GetUsersChoice("\nЖелаете повторить тест? ");
-                if (userChoice == false)
+                if (!userChoice)
                 {
                     break;
                 }
+
+                Console.Clear();
             }
         }
 
         static void ShowUserResults()
         {
-            var reader = new StreamReader(Result_Txt_File_Name, Encoding.UTF8);
+            var reader = new StreamReader(ResultTxtFileName, Encoding.UTF8);
 
-            Console.WriteLine("{0,-20}|{1,-20}|{2,-20}|", "Имя пользователя", "Правильных ответов", "Диагноз");
+            var outputFormat = "{0,-20}|{1,-20}|{2,-20}|";
+            Console.WriteLine("\n{0,40}\n", "РЕЗУЛЬТАТЫ :");
+            Console.WriteLine(outputFormat, "Имя пользователя", "Правильных ответов", "Диагноз");
             Console.WriteLine("{0,20}{0,20}{0,20}", "_____________________");
 
             while (!reader.EndOfStream)
             {
                 var line = reader.ReadLine();
-                //    ShowResultsTable(value);
-                string[] words = line.Split('#');
-                foreach (String word in words)
-                {
-                    Console.Write("{0,-20}|", word);
-                }
-
-                Console.WriteLine();
+                var words = line.Split('#');
+                
+                Console.WriteLine(outputFormat, words);
             }
             reader.Close();
         }
-        static void SaveUserResult(string UserName, int countRightAnswers, string diagnose)
+        static void SaveUserResult(string userName, int countRightAnswers, string diagnose)
         {
-            string line = $"{UserName}#{countRightAnswers}#{diagnose}";
-            AppendToFile(Result_Txt_File_Name, line);
+            var line = $"{userName}#{countRightAnswers}#{diagnose}";
+            AppendToFile(ResultTxtFileName, line);
         }
 
         static void AppendToFile(string fileName, string value)
@@ -102,105 +102,57 @@ namespace GeniyIdiiotConsoleApp
             writer.Close();
         }
 
-        static string[] GetQuestions()
+        static List<string> GetQuestions()
         {
-            string[] questions = new string[Questions_Max_Number];
+            var questions = new string[QuestionsCount];
             questions[0] = "Сколько будет 2 плюс 2 умноженное на 2?";
             questions[1] = "Бревно нужно разделить на 10 частей, сколько нужно сделать распилов?";
             questions[2] = "На двух руках 10 пальцев. сколько пальцев на 5 руках?";
             questions[3] = "Укол делают каждые полчаса, сколько нужно миинут для трёх уколов?";
             questions[4] = "Пять свечей горело до конца, но две потухли заранее. сколько свечей осталось?";
-            return questions;
+            return questions.ToList();
         }
 
-        static int[] GetAnswers()
+        static List<int> GetAnswers()
         {
-            int[] answers = new int[Questions_Max_Number];
+            var answers = new int[QuestionsCount];
             answers[0] = 6;
             answers[1] = 9;
             answers[2] = 25;
             answers[3] = 60;
             answers[4] = 2;
-            return answers;
+            return answers.ToList();
         }
 
         static string GetDiagnose(int countRightAnswers)
         {
-            string[] diagnoses = new string[Diagnoses_Max_Number];
-            diagnoses[0] = "идиот";
-            diagnoses[1] = "кретин";
-            diagnoses[2] = "дурак";
-            diagnoses[3] = "нормальный";
-            diagnoses[4] = "талант";
-            diagnoses[5] = "гений";
-
-            float adjustedCountRightAnswers = (float)countRightAnswers / Questions_Max_Number;
-            adjustedCountRightAnswers = adjustedCountRightAnswers * (Diagnoses_Max_Number - 1);
+            var diagnoses = new string[] { "идиот", "кретин", "дурак", "нормальный", "талант", "гений" };
+        
+            float adjustedCountRightAnswers = (float)countRightAnswers / QuestionsCount * (diagnoses.Length - 1);
 
             return diagnoses[(int)adjustedCountRightAnswers];
         }
 
-        static int[] GetRandomArray()
-        {
-            Random random = new Random();
-            int[] arrayForMixed = new int[Questions_Max_Number];
-
-            for (int counter = 0; counter < Questions_Max_Number; counter++)
-            {
-                arrayForMixed[counter] = counter;
-            }
-
-            for (int counter = Questions_Max_Number - 1; counter >= 0; counter--)
-            {
-                int temp = arrayForMixed[counter];
-                int nextRandom = random.Next(0, Questions_Max_Number);
-                arrayForMixed[counter] = arrayForMixed[nextRandom];
-                arrayForMixed[nextRandom] = temp;
-            }
-            return arrayForMixed;
-
-        }
-
+       
         static int GetUsersAnswer()
         {
-            int userAnswer;
-
             while (true)
             {
-                if (int.TryParse(Console.ReadLine(), out userAnswer))
+                if (int.TryParse(Console.ReadLine(), out var userAnswer))
                 {
-                    break;
+                      return userAnswer;
                 }
-                else
-                {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Пожалуйста, введите целое число в диапозоне [ -2 147 483 648; 2 147 483 647]!");
                     Console.ForegroundColor = ConsoleColor.White;
-                }
             }
-            return userAnswer;
         }
 
         static bool GetUsersChoice(string message)
         {
-            while (true)
-            {
-                Console.WriteLine(message + "Введите Да или Нет:");
+                Console.WriteLine(message + "Введите Да или любой другой ответ для - Нет:");
                 string userInput = Console.ReadLine();
-
-                if (userInput.ToUpper() == "ДА")
-                {
-                    return true;
-                }
-                if (userInput.ToUpper() == "НЕТ")
-                {
-                    return false;
-                }
-
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Некорректный ответ! ");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+                return userInput.ToUpper() == "ДА" ?  true :  false;
         }
 
 
