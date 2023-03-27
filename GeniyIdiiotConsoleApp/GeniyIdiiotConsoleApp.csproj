@@ -43,7 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleProvider.cs" />
     <Compile Include="Diagnoses.cs" />
+    <Compile Include="FileProvider.cs" />
     <Compile Include="QuestionsRepository.cs" />
     <Compile Include="Question.cs" />
     <Compile Include="Program.cs" />

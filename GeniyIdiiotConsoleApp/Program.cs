@@ -3,87 +3,103 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace GeniyIdiiotConsoleApp
 {
+
     internal class Program
     {
-
+        public static readonly string UserResultTxtFile = "user_res3.txt.";
+        public static readonly string QuestionsAndAnswersTxtFile = "questions.txt";
+ 
         static void Main(string[] args)
         {
-            Random random = new Random();
+            var resultRepository = new UsersResultRepository(UserResultTxtFile);
 
-            while (true)
+            var questions = new QuestionsRepository(QuestionsAndAnswersTxtFile);
+
+            var startGame = StartMenu(resultRepository, questions);
+
+            while (startGame)
             {
+                Random random = new Random();
 
                 var user = new User();
 
-                var resultRepository = new UsersResultRepository("user_res.txt");
+                questions = new QuestionsRepository(QuestionsAndAnswersTxtFile); //reload after menu changes (add, remove)
 
-                var questions = new QuestionsRepository();
-
-                int countQuestions = questions.Count();
-
+                var countQuestions = questions.Count();
 
                 for (int counter = 0; counter < countQuestions; counter++)
                 {
                     Console.WriteLine($"Вопрос номер {counter + 1}");
 
                     var randomQuestionIndex = random.Next(questions.Count());
-                    Console.WriteLine(questions.questions[randomQuestionIndex].GetQuestion());
 
+                    Console.WriteLine(questions.GetCurrentQuestion(randomQuestionIndex));
 
-                    if (user.GetUserAnswer() == questions.questions[randomQuestionIndex].GetRightAnswer())
+                    if (ConsoleProvider.GetUserNumAnswer() == questions.GetCurrentAnswer(randomQuestionIndex))
                     {
-                        user.icreaseCountRightAnswer();
+                        user.IncreaseCountRightAnswer();
                     }
 
-                    questions.questions.RemoveAt(randomQuestionIndex);
+                    questions.RemoveCurrentQuestion(randomQuestionIndex);
                 }
 
-                var assessment = new Diagnoses ();
-                user.SetDiagnose(assessment.GetDiagnose(user.GetCountRightAnswers(), countQuestions));
+                var result = new Diagnoses();
 
-                resultRepository.ShowUserResults(user.GetName(), user.GetCountRightAnswers(), user.GetDiagnose());
+                var resultDiagnose = result.GetDiagnose(user.GetCountRightAnswers(), countQuestions);
 
-                 bool userChoice = GetUsersChoice("\nЖелаете посмотреть результаты? ");
-                if (userChoice)
-                {
-                    resultRepository.ShowUserResultsFromFile();
-                }
+                user.SetDiagnose(resultDiagnose);
 
-                userChoice = GetUsersChoice("\nЖелаете повторить тест? ");
-                if (!userChoice)
-                {
-                    break;
-                }
+                resultRepository.SaveUserResult(user.GetName(), user.GetCountRightAnswers(), user.GetDiagnose());
 
-                Console.Clear();
+                ConsoleProvider.ShowUserResult(user.GetName(), user.GetCountRightAnswers(), user.GetDiagnose());
+
+                ConsoleProvider.Pause();
+
+                startGame = StartMenu(resultRepository, questions);
             }
         }
 
-  
-        static int GetUsersAnswer()
+        static bool StartMenu(UsersResultRepository itemResults, QuestionsRepository itemQuestions)
         {
-            while (true)
+            var startMenu = true;
+            var startGame = true;
+
+            while (startMenu)
             {
-                if (int.TryParse(Console.ReadLine(), out var userAnswer))
+                // 1 - старт теста пользователя(игры), 2 - таблица результатов, 3 - добавить вопрос, 4- удалить вопрос, 0 - выход
+                switch (ConsoleProvider.Start())
                 {
-                    return userAnswer;
+                    case 1:
+                        startMenu = false;
+                        break;
+                    case 2:
+                        var result = UsersResultRepository.GetUsersResults(itemResults.GetRepositoryPath());
+                        ConsoleProvider.ShowUsersResultTable(result);
+                        break;
+                    case 3:
+                        var newQuestion = ConsoleProvider.AddNewQuestionInterface();
+                        itemQuestions.Save(newQuestion);
+                        itemQuestions = new QuestionsRepository(QuestionsAndAnswersTxtFile);
+                        break;
+                    case 4:
+                        var questionNum = ConsoleProvider.RemoveQuestionInterface(itemQuestions);
+                        if (questionNum > 0)
+                        {
+                            itemQuestions.Remove(questionNum - 1);
+                            itemQuestions = new QuestionsRepository(QuestionsAndAnswersTxtFile);
+                        }
+                        break;
+                    default:
+                        startGame = false;
+                        startMenu = false;
+                        break;
                 }
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Пожалуйста, введите целое число в диапозоне [ -2 147 483 648; 2 147 483 647]!");
-                Console.ForegroundColor = ConsoleColor.White;
             }
+            return startGame;
         }
-
-        static bool GetUsersChoice(string message)
-        {
-            Console.WriteLine(message + "Введите Да или любой другой ответ для - Нет:");
-            string userInput = Console.ReadLine();
-            return userInput.ToUpper() == "ДА" ? true : false;
-        }
-
-
     }
 }

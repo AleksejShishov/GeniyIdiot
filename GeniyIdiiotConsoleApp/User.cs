@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GeniyIdiiotConsoleApp
 {
@@ -14,12 +10,17 @@ namespace GeniyIdiiotConsoleApp
 
         public User()
         {
-            Console.WriteLine("Здравствуйте! Введите своё имя:");
-            name = Console.ReadLine();
-            Console.WriteLine();
+            name = ConsoleProvider.UserInit();
         }
 
-        public void icreaseCountRightAnswer()
+        public User(string name, int countRightAnswers, string diagnose)
+        {
+            this.name = name;
+            this.countRightAnswers = countRightAnswers; 
+            this.diagnose = diagnose;
+        }
+
+        public void IncreaseCountRightAnswer()
         {
             ++countRightAnswers;
         }
@@ -30,19 +31,5 @@ namespace GeniyIdiiotConsoleApp
 
         public string GetDiagnose() { return diagnose; }
         public void SetDiagnose(string value) { diagnose = value; }
-
-        public int GetUserAnswer()
-        {
-            while (true)
-            {
-                if (int.TryParse(Console.ReadLine(), out var userAnswer))
-                {
-                    return userAnswer;
-                }
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Пожалуйста, введите целое число в диапозоне [ -2 147 483 648; 2 147 483 647]!");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-        }
     }
 }
